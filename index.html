@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AVS Furnishing Curtain Order</title>
   <style>
     body {
@@ -59,6 +59,11 @@
       font-weight: bold;
       color: #27ae60;
       white-space: pre-wrap;
+      background: #dff0d8;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #c3e6cb;
+      min-height: 100px;
     }
     button {
       margin-top: 20px;
@@ -69,6 +74,7 @@
       background-color: #2980b9;
       color: white;
       cursor: pointer;
+      margin-right: 10px;
     }
     button:hover {
       background-color: #1c5980;
@@ -96,6 +102,7 @@
       button {
         width: 100%;
         margin-top: 15px;
+        margin-right: 0;
       }
     }
   </style>
@@ -212,9 +219,10 @@
 
     function calculateTotal() {
       const windows = document.querySelectorAll('.window-set');
-      let total = 0;
-
-      windows.forEach(window => {
+      let grandTotal = 0;
+      let output = '';
+      windows.forEach((window, i) => {
+        const location = window.querySelector('.windowLocation').value || `Window ${i+1}`;
         const length = parseFloat(window.querySelector('.length').value) || 0;
         const breadth = parseFloat(window.querySelector('.breadth').value) || 0;
         const ratePerMtr = parseFloat(window.querySelector('.ratePerMtr').value) || 0;
@@ -222,65 +230,114 @@
         const stitchingType = window.querySelector('.stitchingType').value;
         const liningRequired = window.querySelector('.lining').value;
         const liningType = window.querySelector('.liningType').value;
-        const beltQty = parseFloat(window.querySelector('.beltQty').value) || 0;
+        const beltQty = parseInt(window.querySelector('.beltQty').value) || 0;
         const rodType = window.querySelector('.rodType').value;
 
-        const panelWidth = 20; // Standard panel width in inches
-        const panels = Math.ceil(breadth / panelWidth);
+        const panelWidth = 20; // inches per curtain panel
+        const curtainsCount = Math.ceil(breadth / panelWidth);
 
-        const fabricLengthMtr = (length + 12) / 39.5; // 12 inches extra for top & bottom margin
-        const fabricRequired = fabricLengthMtr * panels;
+        // Fabric length per curtain (length + 12 inches) converted to meters (1 m = 39.5 inches)
+        const fabricLengthMtrPerCurtain = (length + 12) / 39.5;
 
-        const extraFabricForBelts = (beltQty > 0) ? (Math.ceil(beltQty / 2) * 0.5) : 0;
-        const totalFabricRequired = fabricRequired + extraFabricForBelts;
+        // Total fabric required in meters
+        const totalFabricMtr = fabricLengthMtrPerCurtain * curtainsCount;
 
-        let fabricCost = totalFabricRequired * ratePerMtr;
-        const discountAmount = fabricCost * (fabricDiscount / 100);
-        fabricCost -= discountAmount;
+        // Cost before discount
+        let fabricCost = totalFabricMtr * ratePerMtr;
 
+        // Apply fabric discount
+        fabricCost = fabricCost * (1 - fabricDiscount / 100);
+
+        // Lining cost per meter (just example rates)
+        let liningCostPerMtr = 0;
+        if(liningRequired === "yes"){
+          if(liningType === "satin") liningCostPerMtr = 100;
+          else if(liningType === "blackout") liningCostPerMtr = 200;
+        }
+
+        const totalLiningCost = liningCostPerMtr * totalFabricMtr;
+
+        // Stitching cost per curtain panel (example rates)
         let stitchingCostPerCurtain = 0;
-        if (stitchingType === 'ripple') {
-          stitchingCostPerCurtain = liningRequired === 'yes' ? 500 : 450;
-        } else {
-          stitchingCostPerCurtain = liningRequired === 'yes' ? 250 : 200;
+        switch(stitchingType){
+          case "2 pleat": stitchingCostPerCurtain = 50; break;
+          case "3 pleat": stitchingCostPerCurtain = 70; break;
+          case "eyelet": stitchingCostPerCurtain = 60; break;
+          case "ripple": stitchingCostPerCurtain = 80; break;
         }
-        const stitchingCost = stitchingCostPerCurtain * panels;
+        const totalStitchingCost = stitchingCostPerCurtain * curtainsCount;
 
-        let liningFabricCost = 0;
-        if (liningRequired === 'yes') {
-          const liningRate = liningType === 'satin' ? 180 : 250;
-          liningFabricCost = fabricLengthMtr * panels * liningRate;
-        }
+        // Belts cost (example ₹50 each)
+        const beltCost = beltQty * 50;
 
-        const beltStitchingCost = beltQty * 200;
+        // Calculate grand total for this window
+        const windowTotal = fabricCost + totalLiningCost + totalStitchingCost + beltCost;
 
-        let rodCost = 0;
-        if (rodType !== 'none') {
-          let rodRate = 0;
-          if (rodType === 'ss rod') rodRate = 195;
-          else if (rodType === 'j silent channel') rodRate = 210;
-          else if (rodType === 'al silent channel') rodRate = 350;
+        grandTotal += windowTotal;
 
-          const rodLengthFeet = breadth / 12;
-          rodCost = rodLengthFeet * rodRate;
-        }
+        output += `Window: ${location}
+  - Fabric Required per Curtain (m): ${fabricLengthMtrPerCurtain.toFixed(2)}
+  - Number of Curtains: ${curtainsCount}
+  - Total Fabric Required (m): ${totalFabricMtr.toFixed(2)}
+  - Number of Belts: ${beltQty}
+  - Total Lining Required (m): ${liningRequired === "yes" ? totalFabricMtr.toFixed(2) : '0'}
+  - Cost of Lining (₹): ${totalLiningCost.toFixed(2)}
+  - Type of Pleat: ${stitchingType}
+  - Type of Stitching Cost per Curtain (₹): ${stitchingCostPerCurtain}
+  - Total Stitching Cost (₹): ${totalStitchingCost.toFixed(2)}
+  - Fabric Cost after Discount (₹): ${fabricCost.toFixed(2)}
+  - Belt Cost (₹): ${beltCost.toFixed(2)}
+  - Subtotal (₹): ${windowTotal.toFixed(2)}
 
-        const windowTotal = fabricCost + stitchingCost + liningFabricCost + beltStitchingCost + rodCost;
-        total += windowTotal;
+`;
       });
 
-      document.getElementById('output').innerText = 'Total Estimate: ₹' + total.toFixed(2);
+      output += `GRAND TOTAL (₹): ${grandTotal.toFixed(2)}`;
+      document.getElementById('output').innerText = output;
     }
 
     async function exportPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
 
-      doc.setFont('Helvetica', 'bold');
-      doc.setFontSize(20);
-      doc.text('AVS FURNISHINGS', 105, 15, { align: 'center' });
+      const customerName = document.getElementById('customerName').value || 'N/A';
+      const orderDate = document.getElementById('orderDate').value || 'N/A';
+      const phoneNumber = document.getElementById('phoneNumber').value || 'N/A';
+      const outputText = document.getElementById('output').innerText || 'Please calculate total first!';
+
+      if(outputText === 'Please calculate total first!') {
+        alert('Please calculate the total before exporting PDF.');
+        return;
+      }
+
+      let y = 10;
+      doc.setFontSize(18);
+      doc.text("AVS Furnishings", 105, y, null, null, 'center');
+      y += 10;
+      doc.setFontSize(12);
+      doc.text("MAKING HOMES EXTRA SPECIAL", 105, y, null, null, 'center');
+      y += 15;
+
+      doc.setFontSize(14);
+      doc.text(`Customer Name: ${customerName}`, 10, y);
+      y += 10;
+      doc.text(`Order Date: ${orderDate}`, 10, y);
+      y += 10;
+      doc.text(`Phone Number: ${phoneNumber}`, 10, y);
+      y += 15;
 
       doc.setFontSize(12);
-      doc.set
+
+      const lines = doc.splitTextToSize(outputText, 180);
+      doc.text(lines, 10, y);
+
+      doc.save(`AVS_Curtain_Order_${customerName}_${orderDate}.pdf`);
+    }
+
+    // Start with 1 window set by default
+    addWindowSet();
+  </script>
+</body>
+</html>
 
 
