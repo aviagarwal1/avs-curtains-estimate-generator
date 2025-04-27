@@ -3,164 +3,115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AVS Furnishing Curtain Order</title>
+  <title>AVS Furnishings - Curtain Order (v2)</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 20px;
-      background: linear-gradient(135deg, #e3f2fd, #fce4ec);
-      color: #34495e;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f7f9fc;
     }
     .header {
       text-align: center;
-      margin-bottom: 30px;
-      padding-bottom: 10px;
-      border-bottom: 3px solid #2980b9;
+      margin-bottom: 20px;
     }
     .header img {
-      height: 90px;
-      filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.2));
+      height: 80px;
     }
     .header h1 {
       margin: 10px 0 5px;
-      font-size: 36px;
-      font-weight: 700;
+      font-size: 32px;
       color: #2c3e50;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
     }
     .header p {
       margin: 0;
       font-style: italic;
-      font-weight: 500;
       color: #7f8c8d;
-      letter-spacing: 1px;
+      font-size: 14px;
     }
     form {
-      max-width: 900px;
-      margin: 0 auto 50px;
-      background-color: #fff;
-      padding: 30px 35px;
-      border-radius: 14px;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-      transition: box-shadow 0.3s ease;
-    }
-    form:hover {
-      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+      max-width: 960px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     }
     label {
       display: block;
-      margin-top: 20px;
+      margin-top: 15px;
       font-weight: 600;
-      color: #2c3e50;
-      text-transform: uppercase;
-      font-size: 13px;
-      letter-spacing: 1px;
+      color: #34495e;
     }
     input[type="text"],
     input[type="number"],
     input[type="date"],
     select {
       width: 100%;
-      padding: 12px 14px;
-      margin-top: 6px;
+      padding: 10px;
+      margin-top: 5px;
       border-radius: 8px;
-      border: 1.8px solid #bdc3c7;
-      background-color: #f9fafc;
-      font-size: 16px;
-      color: #34495e;
-      box-sizing: border-box;
-      transition: border-color 0.25s ease;
+      border: 1px solid #ccc;
+      background: #ecf0f1;
+      font-size: 15px;
     }
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    input[type="date"]:focus,
-    select:focus {
-      outline: none;
-      border-color: #2980b9;
-      background-color: #ffffff;
-      box-shadow: 0 0 6px #a8d0ff;
-    }
-    .window-set {
-      border: 1.5px solid #2980b9;
-      padding: 22px 25px;
-      margin-bottom: 30px;
-      border-radius: 12px;
-      background-color: #f7fbff;
-      box-shadow: inset 0 1px 8px rgba(41, 128, 185, 0.1);
-      transition: background-color 0.3s ease;
-    }
-    .window-set:hover {
-      background-color: #eaf4ff;
+    .button-group {
+      margin-top: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
     }
     button {
-      margin-top: 25px;
-      padding: 14px 36px;
-      font-size: 18px;
-      font-weight: 700;
+      padding: 12px 24px;
+      font-size: 16px;
       border: none;
       border-radius: 8px;
       background-color: #2980b9;
       color: white;
       cursor: pointer;
-      box-shadow: 0 5px 12px rgba(41, 128, 185, 0.4);
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
-      user-select: none;
+      transition: background 0.3s;
     }
     button:hover {
       background-color: #1c5980;
-      box-shadow: 0 7px 16px rgba(28, 89, 128, 0.6);
+    }
+    .window-set {
+      border: 1px solid #d0d7de;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+      background: #fafafa;
     }
     .result {
-      margin-top: 35px;
-      font-size: 18px;
-      font-weight: 600;
+      margin-top: 30px;
+      font-size: 17px;
+      font-weight: bold;
       color: #27ae60;
       white-space: pre-wrap;
-      border: 2px dashed #27ae60;
-      padding: 18px 20px;
-      border-radius: 10px;
-      background-color: #eaffea;
-      max-height: 320px;
-      overflow-y: auto;
-      font-family: 'Courier New', Courier, monospace;
+      background: #e9f7ef;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #c9e7d5;
     }
-    @media (max-width: 650px) {
-      body {
-        margin: 12px;
-      }
-      form {
-        padding: 22px 25px;
-      }
-      label {
-        margin-top: 15px;
-        font-size: 12px;
-      }
-      input[type="text"],
-      input[type="number"],
-      input[type="date"],
-      select {
-        font-size: 15px;
-        padding: 10px 12px;
+    @media (max-width: 600px) {
+      .button-group {
+        flex-direction: column;
+        align-items: center;
       }
       button {
         width: 100%;
-        font-size: 17px;
-        padding: 16px 0;
-        margin-top: 15px;
-      }
-      .result {
-        font-size: 16px;
-        max-height: 240px;
       }
     }
   </style>
 </head>
+
 <body>
   <div class="header">
     <img src="avs-logo.jpg" alt="AVS Furnishings Logo" />
     <h1>AVS FURNISHINGS</h1>
     <p>MAKING HOMES EXTRA SPECIAL</p>
   </div>
+
   <form id="orderForm">
     <label>Customer Name:</label>
     <input type="text" id="customerName" required />
@@ -173,9 +124,11 @@
 
     <div id="windowContainer"></div>
 
-    <button type="button" onclick="addWindowSet()">Add Window</button>
-    <button type="button" onclick="calculateTotal()">Calculate Total</button>
-    <button type="button" onclick="exportPDF()">Export as PDF</button>
+    <div class="button-group">
+      <button type="button" onclick="addWindowSet()">Add Window</button>
+      <button type="button" onclick="calculateTotal()">Calculate Total</button>
+      <button type="button" onclick="exportPDF()">Export as PDF</button>
+    </div>
 
     <div class="result" id="output"></div>
   </form>
@@ -191,19 +144,19 @@
         <input type="text" class="windowLocation" required />
 
         <label>Length (in inches):</label>
-        <input type="number" class="length" required min="0" step="any" />
+        <input type="number" class="length" required />
 
         <label>Breadth (in inches):</label>
-        <input type="number" class="breadth" required min="0" step="any" />
+        <input type="number" class="breadth" required />
 
         <label>Fabric Name:</label>
         <input type="text" class="fabricName" required />
 
         <label>Rate per Metre (₹):</label>
-        <input type="number" class="ratePerMtr" required min="0" step="any" />
+        <input type="number" class="ratePerMtr" required />
 
         <label>Fabric Discount (%):</label>
-        <input type="number" class="fabricDiscount" value="0" max="20" required oninput="validateDiscount(this)" min="0" />
+        <input type="number" class="fabricDiscount" value="0" max="20" required oninput="validateDiscount(this)" />
 
         <label>Stitching Type:</label>
         <select class="stitchingType">
@@ -226,7 +179,7 @@
         </select>
 
         <label>Number of Belts:</label>
-        <input type="number" class="beltQty" value="0" min="0" />
+        <input type="number" class="beltQty" value="0" />
 
         <label>Rod/Channel Type:</label>
         <select class="rodType">
@@ -243,8 +196,6 @@
       if (parseFloat(input.value) > 20) {
         input.value = 20;
         showToast("Fabric discount cannot be more than 20%!");
-      } else if (parseFloat(input.value) < 0) {
-        input.value = 0;
       }
     }
 
@@ -262,17 +213,16 @@
       toast.style.fontSize = '16px';
       toast.style.zIndex = '1000';
       toast.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
-      toast.style.animation = 'fadeInOut 2.5s';
       document.body.appendChild(toast);
       setTimeout(() => { toast.remove(); }, 2500);
     }
 
     function calculateTotal() {
       const windows = document.querySelectorAll('.window-set');
+      let output = '';
       let grandTotal = 0;
-      let resultText = "";
 
-      windows.forEach((window, index) => {
+      windows.forEach((window, idx) => {
         const length = parseFloat(window.querySelector('.length').value) || 0;
         const breadth = parseFloat(window.querySelector('.breadth').value) || 0;
         const ratePerMtr = parseFloat(window.querySelector('.ratePerMtr').value) || 0;
@@ -283,12 +233,11 @@
         const beltQty = parseFloat(window.querySelector('.beltQty').value) || 0;
         const rodType = window.querySelector('.rodType').value;
 
-        const panelWidth = 20; // Standard panel width in inches
+        const panelWidth = 20;
         const panels = Math.ceil(breadth / panelWidth);
 
-        const fabricLengthMtr = (length + 12) / 39.5; // 12 inches extra margin, convert inch to meter
+        const fabricLengthMtr = (length + 12) / 39.5;
         const fabricRequired = fabricLengthMtr * panels;
-
         const extraFabricForBelts = (beltQty > 0) ? (Math.ceil(beltQty / 2) * 0.5) : 0;
         const totalFabricRequired = fabricRequired + extraFabricForBelts;
 
@@ -319,7 +268,59 @@
           else if (rodType === 'j silent channel') rodRate = 210;
           else if (rodType === 'al silent channel') rodRate = 350;
 
-         
+          const rodLengthFeet = breadth / 12;
+          rodCost = rodLengthFeet * rodRate;
+        }
+
+        const windowTotal = fabricCost + stitchingCost + liningFabricCost + beltStitchingCost + rodCost;
+        grandTotal += windowTotal;
+
+        output += `Window ${idx + 1}:
+- Fabric Required per Curtain: ${fabricLengthMtr.toFixed(2)} mtr
+- Total Curtains: ${panels}
+- Total Fabric Required: ${totalFabricRequired.toFixed(2)} mtr
+- Belts: ${beltQty}
+- Lining: ${liningRequired === 'yes' ? liningType : 'No'}
+- Stitching Type: ${stitchingType}
+- Total Stitching Cost: ₹${stitchingCost.toFixed(2)}
+- Total Cost: ₹${windowTotal.toFixed(2)}
+
+`;
+      });
+
+      output += `----------------------------
+Grand Total: ₹${grandTotal.toFixed(2)}`;
+
+      document.getElementById('output').innerText = output;
+    }
+
+    async function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(20);
+      doc.text('AVS FURNISHINGS', 105, 15, { align: 'center' });
+
+      doc.setFontSize(12);
+      doc.setFont('Helvetica', 'normal');
+      doc.text(`Customer Name: ${document.getElementById('customerName').value}`, 10, 30);
+      doc.text(`Phone Number: ${document.getElementById('phoneNumber').value}`, 10, 40);
+      doc.text(`Date: ${document.getElementById('orderDate').value}`, 10, 50);
+
+      let y = 65;
+      const output = document.getElementById('output').innerText;
+      const outputLines = doc.splitTextToSize(output, 180);
+      doc.text(outputLines, 10, y);
+
+      doc.save('avs_furnishing_estimate.pdf');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      addWindowSet(); // Automatically add 1st window on load
+    });
+  </script>
+</body>
+</html>
 
 
 
