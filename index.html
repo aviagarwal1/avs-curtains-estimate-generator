@@ -2,130 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AVS Furnishing Curtain Order</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AVS Furnishing Curtain Estimator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f0f4f8;
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .header img {
-      height: 80px;
-    }
-    .header h1 {
-      margin: 10px 0 0;
-      font-size: 32px;
-      color: #2c3e50;
-    }
-    .header p {
-      margin: 5px 0;
-      font-style: italic;
-      color: #7f8c8d;
-    }
-    form {
-      max-width: 900px;
-      margin: 0 auto;
-      background-color: #ffffff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-      color: #34495e;
-    }
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    select {
-      width: 100%;
-      padding: 12px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: 1px solid #bdc3c7;
-      background-color: #ecf0f1;
-      font-size: 16px;
-    }
-    .result {
-      margin-top: 30px;
-      font-size: 16px;
-      font-weight: bold;
-      color: #27ae60;
-      white-space: pre-wrap;
-    }
-    button {
-      margin-top: 20px;
-      padding: 14px 28px;
-      font-size: 18px;
-      border: none;
-      border-radius: 6px;
-      background-color: #2980b9;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #1c5980;
-    }
     .window-set {
       border: 1px solid #ccc;
       padding: 15px;
       margin-bottom: 20px;
-      border-radius: 8px;
-      background-color: #fdfdfd;
+      border-radius: 5px;
     }
-    @media (max-width: 600px) {
-      body {
-        margin: 10px;
-      }
-      form {
-        padding: 20px;
-      }
-      input[type="text"],
-      input[type="number"],
-      input[type="date"],
-      select {
-        font-size: 18px;
-      }
-      button {
-        width: 100%;
-        margin-top: 15px;
-      }
+    label {
+      display: block;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <img src="avs-logo.jpg" alt="AVS Furnishings Logo" />
-    <h1>AVS FURNISHINGS</h1>
-    <p>MAKING HOMES EXTRA SPECIAL</p>
-  </div>
-  <form id="orderForm">
-    <label>Customer Name:</label>
+
+  <h1>AVS Furnishing Curtain Estimator</h1>
+
+  <label>Customer Name:
     <input type="text" id="customerName" required />
-
-    <label>Date:</label>
-    <input type="date" id="orderDate" required />
-
-    <label>Phone Number:</label>
+  </label>
+  <label>Phone Number:
     <input type="text" id="phoneNumber" required />
+  </label>
+  <label>Order Date:
+    <input type="date" id="orderDate" required />
+  </label>
 
-    <div id="windowContainer"></div>
+  <div id="windowContainer"></div>
 
-    <button type="button" onclick="addWindowSet()">Add Window</button>
-    <button type="button" onclick="calculateTotal()">Calculate Total</button>
-    <button type="button" onclick="exportPDF()">Export as PDF</button>
+  <button onclick="addWindowSet()">Add Another Window</button>
+  <button onclick="calculateTotal()">Calculate Total</button>
+  <button onclick="exportPDF()">Export PDF</button>
 
-    <div class="result" id="output"></div>
-  </form>
+  <h2 id="output"></h2>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     function addWindowSet() {
       const container = document.getElementById('windowContainer');
@@ -171,7 +85,7 @@
         </select>
 
         <label>Number of Belts:</label>
-        <input type="number" class="beltQty" value="0" />
+        <input type="number" class="beltQty" value="0" min="0" />
 
         <label>Rod/Channel Type:</label>
         <select class="rodType">
@@ -210,10 +124,73 @@
       setTimeout(() => { toast.remove(); }, 2500);
     }
 
+    function calculateTotal() {
+      const windows = document.querySelectorAll('.window-set');
+      let total = 0;
+
+      windows.forEach(window => {
+        const length = parseFloat(window.querySelector('.length').value) || 0;
+        const breadth = parseFloat(window.querySelector('.breadth').value) || 0;
+        const ratePerMtr = parseFloat(window.querySelector('.ratePerMtr').value) || 0;
+        const fabricDiscount = parseFloat(window.querySelector('.fabricDiscount').value) || 0;
+        const stitchingType = window.querySelector('.stitchingType').value;
+        const liningRequired = window.querySelector('.lining').value;
+        const liningType = window.querySelector('.liningType').value;
+        const beltQty = parseFloat(window.querySelector('.beltQty').value) || 0;
+        const rodType = window.querySelector('.rodType').value;
+
+        const panelWidth = 20; // Standard panel width in inches
+        const panels = Math.ceil(breadth / panelWidth);
+
+        const fabricLengthMtr = (length + 12) / 39.5; // 12 inches extra for top & bottom margin
+        const fabricRequired = fabricLengthMtr * panels;
+
+        const extraFabricForBelts = (beltQty > 0) ? (Math.ceil(beltQty / 2) * 0.5) : 0;
+        const totalFabricRequired = fabricRequired + extraFabricForBelts;
+
+        let fabricCost = totalFabricRequired * ratePerMtr;
+        const discountAmount = fabricCost * (fabricDiscount / 100);
+        fabricCost -= discountAmount;
+
+        let stitchingCostPerCurtain = 0;
+        if (stitchingType === 'ripple') {
+          stitchingCostPerCurtain = liningRequired === 'yes' ? 500 : 450;
+        } else {
+          stitchingCostPerCurtain = liningRequired === 'yes' ? 250 : 200;
+        }
+        const stitchingCost = stitchingCostPerCurtain * panels;
+
+        let liningFabricCost = 0;
+        if (liningRequired === 'yes') {
+          const liningRate = liningType === 'satin' ? 180 : 250;
+          liningFabricCost = fabricLengthMtr * panels * liningRate;
+        }
+
+        const beltStitchingCost = beltQty * 200;
+
+        let rodCost = 0;
+        if (rodType !== 'none') {
+          let rodRate = 0;
+          if (rodType === 'ss rod') rodRate = 195;
+          else if (rodType === 'j silent channel') rodRate = 210;
+          else if (rodType === 'al silent channel') rodRate = 350;
+
+          const rodLengthFeet = breadth / 12;
+          rodCost = rodLengthFeet * rodRate;
+        }
+
+        const windowTotal = fabricCost + stitchingCost + liningFabricCost + beltStitchingCost + rodCost;
+        total += windowTotal;
+      });
+
+      const output = document.getElementById('output');
+      output.textContent = `Total Estimate: ₹${total.toFixed(2)}`;
+    }
+
     async function exportPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      
+
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(20);
       doc.text('AVS FURNISHINGS', 105, 15, { align: 'center' });
@@ -230,28 +207,36 @@
       windowSets.forEach((window, index) => {
         doc.setFont('Helvetica', 'bold');
         doc.text(`Window ${index + 1}:`, 10, y);
+        y += 8;
         doc.setFont('Helvetica', 'normal');
         const fields = window.querySelectorAll('input, select');
         fields.forEach(field => {
           if (field.value.trim() !== '') {
+            const labelText = field.previousElementSibling ? field.previousElementSibling.innerText : '';
+            doc.text(`${labelText} ${field.value}`, 10, y);
             y += 8;
-            doc.text(`${field.previousElementSibling.innerText} ${field.value}`, 10, y);
           }
         });
-        y += 10;
+        y += 8;
       });
 
       y += 10;
-      const output = document.getElementById('output').innerText;
-      const outputLines = doc.splitTextToSize(output, 180);
-      doc.setFont('Helvetica', 'bold');
-      doc.text('Total Estimate:', 10, y);
-      y += 8;
-      doc.setFont('Helvetica', 'normal');
-      doc.text(outputLines, 10, y);
+      const outputText = document.getElementById('output').textContent;
+      if (outputText) {
+        doc.setFont('Helvetica', 'bold');
+        doc.text('Total Estimate:', 10, y);
+        y += 8;
+        doc.setFont('Helvetica', 'normal');
+        const outputLines = doc.splitTextToSize(outputText, 180);
+        doc.text(outputLines, 10, y);
+      }
 
       doc.save('avs_furnishing_estimate.pdf');
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      addWindowSet(); // Add first window automatically
+    });
   </script>
 </body>
 </html>
