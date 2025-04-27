@@ -3,39 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AVS Furnishings - Curtain Order (v2)</title>
+  <title>AVS Furnishing Curtain Order</title>
   <style>
     body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: #f7f9fc;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 20px;
+      background: linear-gradient(to bottom right, #f0f4f8, #ffffff);
     }
     .header {
       text-align: center;
       margin-bottom: 20px;
     }
     .header img {
-      height: 80px;
+      height: 70px;
     }
     .header h1 {
-      margin: 10px 0 5px;
-      font-size: 32px;
+      margin: 10px 0 0;
+      font-size: 30px;
       color: #2c3e50;
     }
     .header p {
-      margin: 0;
+      margin: 5px 0;
       font-style: italic;
       color: #7f8c8d;
-      font-size: 14px;
     }
     form {
-      max-width: 960px;
+      max-width: 950px;
       margin: auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     }
     label {
       display: block;
@@ -43,69 +41,63 @@
       font-weight: 600;
       color: #34495e;
     }
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    select {
+    input[type="text"], input[type="number"], input[type="date"], select {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin-top: 5px;
       border-radius: 8px;
-      border: 1px solid #ccc;
-      background: #ecf0f1;
-      font-size: 15px;
+      border: 1px solid #bdc3c7;
+      background-color: #f9fbfc;
+      font-size: 16px;
     }
-    .button-group {
-      margin-top: 25px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
+    .result {
+      margin-top: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #27ae60;
+      white-space: pre-wrap;
+      background: #ecf9ec;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #27ae60;
     }
     button {
+      margin: 10px 8px 0 0;
       padding: 12px 24px;
-      font-size: 16px;
+      font-size: 17px;
       border: none;
       border-radius: 8px;
-      background-color: #2980b9;
+      background-color: #3498db;
       color: white;
       cursor: pointer;
       transition: background 0.3s;
     }
     button:hover {
-      background-color: #1c5980;
+      background-color: #1d6fa5;
     }
     .window-set {
-      border: 1px solid #d0d7de;
+      border: 1px solid #dcdde1;
       padding: 20px;
-      margin-top: 20px;
+      margin-bottom: 20px;
       border-radius: 10px;
-      background: #fafafa;
-    }
-    .result {
-      margin-top: 30px;
-      font-size: 17px;
-      font-weight: bold;
-      color: #27ae60;
-      white-space: pre-wrap;
-      background: #e9f7ef;
-      padding: 15px;
-      border-radius: 8px;
-      border: 1px solid #c9e7d5;
+      background-color: #fafafa;
     }
     @media (max-width: 600px) {
-      .button-group {
-        flex-direction: column;
-        align-items: center;
+      body {
+        margin: 10px;
+      }
+      form {
+        padding: 20px;
       }
       button {
         width: 100%;
+        margin-top: 10px;
       }
     }
   </style>
 </head>
-
 <body>
+
   <div class="header">
     <img src="avs-logo.jpg" alt="AVS Furnishings Logo" />
     <h1>AVS FURNISHINGS</h1>
@@ -114,49 +106,51 @@
 
   <form id="orderForm">
     <label>Customer Name:</label>
-    <input type="text" id="customerName" required />
+    <input type="text" id="customerName" required>
 
     <label>Date:</label>
-    <input type="date" id="orderDate" required />
+    <input type="date" id="orderDate" required>
 
     <label>Phone Number:</label>
-    <input type="text" id="phoneNumber" required />
+    <input type="text" id="phoneNumber" required>
 
     <div id="windowContainer"></div>
 
-    <div class="button-group">
-      <button type="button" onclick="addWindowSet()">Add Window</button>
-      <button type="button" onclick="calculateTotal()">Calculate Total</button>
-      <button type="button" onclick="exportPDF()">Export as PDF</button>
-    </div>
+    <button type="button" onclick="addWindowSet()">Add Window</button>
+    <button type="button" onclick="calculateTotal()">Calculate Total</button>
+    <button type="button" onclick="exportPDF()">Export as PDF</button>
 
     <div class="result" id="output"></div>
   </form>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      addWindowSet(); // Start with one window set
+    });
+
     function addWindowSet() {
       const container = document.getElementById('windowContainer');
       const div = document.createElement('div');
       div.className = 'window-set';
       div.innerHTML = `
         <label>Window Location:</label>
-        <input type="text" class="windowLocation" required />
+        <input type="text" class="windowLocation" required>
 
         <label>Length (in inches):</label>
-        <input type="number" class="length" required />
+        <input type="number" class="length" required>
 
         <label>Breadth (in inches):</label>
-        <input type="number" class="breadth" required />
+        <input type="number" class="breadth" required>
 
         <label>Fabric Name:</label>
-        <input type="text" class="fabricName" required />
+        <input type="text" class="fabricName" required>
 
         <label>Rate per Metre (₹):</label>
-        <input type="number" class="ratePerMtr" required />
+        <input type="number" class="ratePerMtr" required>
 
         <label>Fabric Discount (%):</label>
-        <input type="number" class="fabricDiscount" value="0" max="20" required oninput="validateDiscount(this)" />
+        <input type="number" class="fabricDiscount" value="0" max="20" required oninput="validateDiscount(this)">
 
         <label>Stitching Type:</label>
         <select class="stitchingType">
@@ -179,7 +173,7 @@
         </select>
 
         <label>Number of Belts:</label>
-        <input type="number" class="beltQty" value="0" />
+        <input type="number" class="beltQty" value="0">
 
         <label>Rod/Channel Type:</label>
         <select class="rodType">
@@ -195,31 +189,13 @@
     function validateDiscount(input) {
       if (parseFloat(input.value) > 20) {
         input.value = 20;
-        showToast("Fabric discount cannot be more than 20%!");
+        alert("Fabric discount cannot exceed 20%.");
       }
-    }
-
-    function showToast(message) {
-      const toast = document.createElement('div');
-      toast.textContent = message;
-      toast.style.position = 'fixed';
-      toast.style.bottom = '30px';
-      toast.style.left = '50%';
-      toast.style.transform = 'translateX(-50%)';
-      toast.style.background = '#e74c3c';
-      toast.style.color = 'white';
-      toast.style.padding = '10px 20px';
-      toast.style.borderRadius = '8px';
-      toast.style.fontSize = '16px';
-      toast.style.zIndex = '1000';
-      toast.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
-      document.body.appendChild(toast);
-      setTimeout(() => { toast.remove(); }, 2500);
     }
 
     function calculateTotal() {
       const windows = document.querySelectorAll('.window-set');
-      let output = '';
+      let output = "";
       let grandTotal = 0;
 
       windows.forEach((window, idx) => {
@@ -237,20 +213,16 @@
         const panels = Math.ceil(breadth / panelWidth);
 
         const fabricLengthMtr = (length + 12) / 39.5;
+        const fabricRequiredPerCurtain = fabricLengthMtr.toFixed(2);
         const fabricRequired = fabricLengthMtr * panels;
-        const extraFabricForBelts = (beltQty > 0) ? (Math.ceil(beltQty / 2) * 0.5) : 0;
-        const totalFabricRequired = fabricRequired + extraFabricForBelts;
+        const extraFabric = (beltQty > 0) ? (Math.ceil(beltQty / 2) * 0.5) : 0;
+        const totalFabricRequired = fabricRequired + extraFabric;
 
         let fabricCost = totalFabricRequired * ratePerMtr;
-        const discountAmount = fabricCost * (fabricDiscount / 100);
-        fabricCost -= discountAmount;
+        const discount = fabricCost * (fabricDiscount / 100);
+        fabricCost -= discount;
 
-        let stitchingCostPerCurtain = 0;
-        if (stitchingType === 'ripple') {
-          stitchingCostPerCurtain = liningRequired === 'yes' ? 500 : 450;
-        } else {
-          stitchingCostPerCurtain = liningRequired === 'yes' ? 250 : 200;
-        }
+        let stitchingCostPerCurtain = (stitchingType === 'ripple') ? (liningRequired === 'yes' ? 500 : 450) : (liningRequired === 'yes' ? 250 : 200);
         const stitchingCost = stitchingCostPerCurtain * panels;
 
         let liningFabricCost = 0;
@@ -263,34 +235,28 @@
 
         let rodCost = 0;
         if (rodType !== 'none') {
-          let rodRate = 0;
-          if (rodType === 'ss rod') rodRate = 195;
-          else if (rodType === 'j silent channel') rodRate = 210;
-          else if (rodType === 'al silent channel') rodRate = 350;
-
-          const rodLengthFeet = breadth / 12;
-          rodCost = rodLengthFeet * rodRate;
+          const rodRate = (rodType === 'ss rod') ? 195 : (rodType === 'j silent channel') ? 210 : 350;
+          rodCost = (breadth / 12) * rodRate;
         }
 
         const windowTotal = fabricCost + stitchingCost + liningFabricCost + beltStitchingCost + rodCost;
         grandTotal += windowTotal;
 
         output += `Window ${idx + 1}:
-- Fabric Required per Curtain: ${fabricLengthMtr.toFixed(2)} mtr
+- Fabric per Curtain: ${fabricRequiredPerCurtain} m
 - Total Curtains: ${panels}
-- Total Fabric Required: ${totalFabricRequired.toFixed(2)} mtr
-- Belts: ${beltQty}
-- Lining: ${liningRequired === 'yes' ? liningType : 'No'}
-- Stitching Type: ${stitchingType}
-- Total Stitching Cost: ₹${stitchingCost.toFixed(2)}
-- Total Cost: ₹${windowTotal.toFixed(2)}
-
-`;
+- Total Fabric: ${totalFabricRequired.toFixed(2)} m
+- Number of Belts: ${beltQty}
+- Lining Required: ${liningRequired}
+- Type of Pleat: ${stitchingType}
+- Stitching Cost: ₹${stitchingCost.toFixed(2)}
+- Lining Fabric Cost: ₹${liningFabricCost.toFixed(2)}
+- Rod/Channel Type: ${rodType}
+- Window Total: ₹${windowTotal.toFixed(2)}
+-----------------------------\n\n`;
       });
 
-      output += `----------------------------
-Grand Total: ₹${grandTotal.toFixed(2)}`;
-
+      output += `GRAND TOTAL: ₹${grandTotal.toFixed(2)}`;
       document.getElementById('output').innerText = output;
     }
 
@@ -308,19 +274,36 @@ Grand Total: ₹${grandTotal.toFixed(2)}`;
       doc.text(`Date: ${document.getElementById('orderDate').value}`, 10, 50);
 
       let y = 65;
+      const windowSets = document.querySelectorAll('.window-set');
+      windowSets.forEach((window, idx) => {
+        doc.setFont('Helvetica', 'bold');
+        doc.text(`Window ${idx + 1}:`, 10, y);
+        doc.setFont('Helvetica', 'normal');
+        const fields = window.querySelectorAll('input, select');
+        fields.forEach(field => {
+          if (field.value.trim() !== '') {
+            y += 8;
+            doc.text(`${field.previousElementSibling.innerText} ${field.value}`, 10, y);
+          }
+        });
+        y += 10;
+      });
+
       const output = document.getElementById('output').innerText;
-      const outputLines = doc.splitTextToSize(output, 180);
-      doc.text(outputLines, 10, y);
+      const lines = doc.splitTextToSize(output, 180);
+      doc.setFont('Helvetica', 'bold');
+      doc.text('Summary:', 10, y);
+      y += 8;
+      doc.setFont('Helvetica', 'normal');
+      doc.text(lines, 10, y);
 
       doc.save('avs_furnishing_estimate.pdf');
     }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      addWindowSet(); // Automatically add 1st window on load
-    });
   </script>
+
 </body>
 </html>
+
 
 
 
