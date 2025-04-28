@@ -119,6 +119,7 @@
     <button type="button" onclick="addWindowSet()">Add Window</button>
     <button type="button" onclick="calculateTotal()">Calculate Total</button>
     <button type="button" onclick="exportPDF()">Export as PDF</button>
+    <button type="button" onclick="generateTailorSlip()">Generate Tailor Slip</button>
 
     <div class="result" id="output"></div>
   </form>
@@ -126,7 +127,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      addWindowSet();
+      addWindowSet(); // Start with one window set
     });
 
     function addWindowSet() {
@@ -235,88 +236,121 @@
 
         let rodCost = 0;
         if (rodType !== 'none') {
-          const rodRate = (rodType === 'ss rod') ? 195 : (rodType === 'j silent channel') ? 210 : 350;
-          rodCost = (breadth / 12) * rodRate;
+          const rodRate = (rodType === 'ss rod') ? 195 : (rodType === 'j silent channel') ? 210 : (rodType === 'al silent channel') ? 245 : 0;
+          rodCost = rodRate * panels;
         }
 
-        const windowTotal = fabricCost + stitchingCost + liningFabricCost + beltStitchingCost + rodCost;
-        grandTotal += windowTotal;
+        const totalCost = fabricCost + stitchingCost + liningFabricCost + beltStitchingCost + rodCost;
+        grandTotal += totalCost;
 
-        output += `Window ${idx + 1}:
-`;
-        output += `- Fabric per Curtain: ${fabricRequiredPerCurtain} m
-`;
-        output += `- Total Curtains: ${panels}
-`;
-        output += `- Total Fabric: ${totalFabricRequired.toFixed(2)} m
-`;
-        output += `- Number of Belts: ${beltQty}
-`;
-        output += `- Lining Required: ${liningRequired === 'yes' ? 'Yes (' + liningType.charAt(0).toUpperCase() + liningType.slice(1) + ')' : 'No'}
-`;
-        output += `- Type of Pleat: ${stitchingType}
-`;
-        output += `- Fabric Cost: ₹${fabricCost.toFixed(2)}
-`;
-        output += `- Stitching Cost: ₹${stitchingCost.toFixed(2)}
-`;
-        output += `- Lining Fabric Cost: ₹${liningFabricCost.toFixed(2)}
-`;
-        output += `- Belt Stitching Cost: ₹${beltStitchingCost.toFixed(2)}
-`;
-        output += `- Rod/Channel Type: ${rodType === 'none' ? 'None' : rodType}
-`;
-        output += `- Rod Cost: ₹${rodCost.toFixed(2)}
-`;
-        output += `- Window Total: ₹${windowTotal.toFixed(2)}
-\n`;
+        output += `Window ${idx + 1}: ${window.querySelector('.windowLocation').value}\n`;
+        output += `Size: Length ${length}" x Breadth ${breadth}"\n`;
+        output += `Panels: ${panels}\n`;
+        output += `Fabric Required: ${totalFabricRequired.toFixed(2)} metres\n`;
+        output += `Fabric Cost: ₹${fabricCost.toFixed(2)} (Discount: ${fabricDiscount}%)\n`;
+        output += `Pleat Type: ${stitchingType}\n`;
+        output += `Stitching Cost: ₹${stitchingCost.toFixed(2)}\n`;
+        output += `Lining: ${liningRequired} ${liningRequired === 'yes' ? '(' + liningType + ')' : ''}\n`;
+        if (liningRequired === 'yes') output += `Lining Fabric Cost: ₹${liningFabricCost.toFixed(2)}\n`;
+        output += `Belts: ${beltQty} (Stitching Cost: ₹${beltStitchingCost.toFixed(2)})\n`;
+        output += `Rod/Channel: ${rodType} (Cost: ₹${rodCost.toFixed(2)})\n`;
+        output += `Total for this window: ₹${totalCost.toFixed(2)}\n\n`;
       });
 
       output += `GRAND TOTAL: ₹${grandTotal.toFixed(2)}`;
-      document.getElementById('output').innerText = output;
+      document.getElementById('output').textContent = output;
     }
 
-    async function exportPDF() {
+    function exportPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      doc.setFont('Helvetica', 'bold');
-      doc.setFontSize(20);
-      doc.text('AVS FURNISHINGS', 105, 15, { align: 'center' });
+
+      const customerName = document.getElementById('customerName').value;
+      const orderDate = document.getElementById('orderDate').value;
+      const phoneNumber = document.getElementById('phoneNumber').value;
+      const outputText = document.getElementById('output').textContent;
+
+      doc.setFontSize(22);
+      doc.text('AVS Furnishings', 105, 20, null, null, 'center');
+      doc.setFontSize(16);
+      doc.text('MAKING HOMES EXTRA SPECIAL', 105, 30, null, null, 'center');
+
+      doc.setFontSize(14);
+      doc.text(`Customer Name: ${customerName}`, 20, 45);
+      doc.text(`Date: ${orderDate}`, 20, 55);
+      doc.text(`Phone: ${phoneNumber}`, 20, 65);
 
       doc.setFontSize(12);
-      doc.setFont('Helvetica', 'normal');
-      doc.text(`Customer Name: ${document.getElementById('customerName').value}`, 10, 30);
-      doc.text(`Phone Number: ${document.getElementById('phoneNumber').value}`, 10, 40);
-      doc.text(`Date: ${document.getElementById('orderDate').value}`, 10, 50);
+      doc.text('Order Details:', 20, 75);
 
-      let y = 65;
-      const windowSets = document.querySelectorAll('.window-set');
-      windowSets.forEach((window, idx) => {
-        doc.setFont('Helvetica', 'bold');
-        doc.text(`Window ${idx + 1}:`, 10, y);
-        doc.setFont('Helvetica', 'normal');
-        const fields = window.querySelectorAll('input, select');
-        fields.forEach(field => {
-          if (field.value.trim() !== '') {
-            y += 8;
-            doc.text(`${field.previousElementSibling.innerText} ${field.value}`, 10, y);
-          }
-        });
-        y += 10;
+      // split text for multi-line output
+      const splitText = doc.splitTextToSize(outputText, 170);
+      doc.text(splitText, 20, 85);
+
+      doc.save(`AVS_Curtain_Order_${customerName.replace(/\s+/g, '_')}_${orderDate}.pdf`);
+    }
+
+    // UPDATED generateTailorSlip function to download instead of open new window
+    function generateTailorSlip() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const customerName = document.getElementById('customerName').value;
+      const orderDate = document.getElementById('orderDate').value;
+      const phoneNumber = document.getElementById('phoneNumber').value;
+
+      doc.setFontSize(24);
+      doc.text('AVS Furnishings', 105, 20, null, null, 'center');
+      doc.setFontSize(14);
+      doc.text('Tailor Slip', 105, 30, null, null, 'center');
+
+      doc.setFontSize(12);
+      doc.text(`Customer Name: ${customerName}`, 20, 45);
+      doc.text(`Date: ${orderDate}`, 20, 55);
+      doc.text(`Phone Number: ${phoneNumber}`, 20, 65);
+
+      const windows = document.querySelectorAll('.window-set');
+      let yPos = 80;
+
+      windows.forEach((window, idx) => {
+        const location = window.querySelector('.windowLocation').value;
+        const length = window.querySelector('.length').value;
+        const breadth = window.querySelector('.breadth').value;
+        const fabricName = window.querySelector('.fabricName').value;
+        const stitching = window.querySelector('.stitchingType').value;
+        const lining = window.querySelector('.lining').value;
+        const liningType = window.querySelector('.liningType').value;
+        const beltQty = window.querySelector('.beltQty').value;
+        const rodType = window.querySelector('.rodType').value;
+
+        if (yPos > 270) { // Add page break if too long
+          doc.addPage();
+          yPos = 20;
+        }
+
+        doc.setFontSize(14);
+        doc.text(`Window ${idx + 1}: ${location}`, 20, yPos);
+        yPos += 8;
+
+        doc.setFontSize(12);
+        doc.text(`Size: ${length}" x ${breadth}"`, 25, yPos);
+        yPos += 6;
+        doc.text(`Fabric: ${fabricName}`, 25, yPos);
+        yPos += 6;
+        doc.text(`Pleat Type: ${stitching}`, 25, yPos);
+        yPos += 6;
+        doc.text(`Lining: ${lining} ${lining === 'yes' ? '(' + liningType + ')' : ''}`, 25, yPos);
+        yPos += 6;
+        doc.text(`Belts: ${beltQty}`, 25, yPos);
+        yPos += 6;
+        doc.text(`Rod/Channel: ${rodType}`, 25, yPos);
+        yPos += 10;
       });
 
-      const output = document.getElementById('output').innerText;
-      const lines = doc.splitTextToSize(output, 180);
-      doc.setFont('Helvetica', 'bold');
-      doc.text('Summary:', 10, y);
-      y += 8;
-      doc.setFont('Helvetica', 'normal');
-      doc.text(lines, 10, y);
-
-      doc.save('avs_furnishing_estimate.pdf');
+      // Save the PDF directly (download)
+      doc.save(`AVS_Tailor_Slip_${customerName.replace(/\s+/g, '_')}_${orderDate}.pdf`);
     }
   </script>
-
 </body>
 </html>
 
