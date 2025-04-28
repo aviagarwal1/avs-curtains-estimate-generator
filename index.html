@@ -126,7 +126,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      addWindowSet(); // Start with one window set
+      addWindowSet();
     });
 
     function addWindowSet() {
@@ -243,17 +243,33 @@
         grandTotal += windowTotal;
 
         output += `Window ${idx + 1}:
-- Fabric per Curtain: ${fabricRequiredPerCurtain} m
-- Total Curtains: ${panels}
-- Total Fabric: ${totalFabricRequired.toFixed(2)} m
-- Number of Belts: ${beltQty}
-- Lining Required: ${liningRequired}
-- Type of Pleat: ${stitchingType}
-- Stitching Cost: ₹${stitchingCost.toFixed(2)}
-- Lining Fabric Cost: ₹${liningFabricCost.toFixed(2)}
-- Rod/Channel Type: ${rodType}
-- Window Total: ₹${windowTotal.toFixed(2)}
------------------------------\n\n`;
+`;
+        output += `- Fabric per Curtain: ${fabricRequiredPerCurtain} m
+`;
+        output += `- Total Curtains: ${panels}
+`;
+        output += `- Total Fabric: ${totalFabricRequired.toFixed(2)} m
+`;
+        output += `- Number of Belts: ${beltQty}
+`;
+        output += `- Lining Required: ${liningRequired === 'yes' ? 'Yes (' + liningType.charAt(0).toUpperCase() + liningType.slice(1) + ')' : 'No'}
+`;
+        output += `- Type of Pleat: ${stitchingType}
+`;
+        output += `- Fabric Cost: ₹${fabricCost.toFixed(2)}
+`;
+        output += `- Stitching Cost: ₹${stitchingCost.toFixed(2)}
+`;
+        output += `- Lining Fabric Cost: ₹${liningFabricCost.toFixed(2)}
+`;
+        output += `- Belt Stitching Cost: ₹${beltStitchingCost.toFixed(2)}
+`;
+        output += `- Rod/Channel Type: ${rodType === 'none' ? 'None' : rodType}
+`;
+        output += `- Rod Cost: ₹${rodCost.toFixed(2)}
+`;
+        output += `- Window Total: ₹${windowTotal.toFixed(2)}
+\n`;
       });
 
       output += `GRAND TOTAL: ₹${grandTotal.toFixed(2)}`;
@@ -303,7 +319,6 @@
 
 </body>
 </html>
-
 
 
 
