@@ -127,7 +127,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      addWindowSet(); // Start with one window set
+      addWindowSet();
     });
 
     function addWindowSet() {
@@ -185,7 +185,7 @@
         </select>
 
         <label>Rod/Channel total length:</label>   
-          <input type="number" class="totalrodlength" required>
+        <input type="number" class="totalrodlength" required>
       `;
       container.appendChild(div);
     }
@@ -212,7 +212,9 @@
         const liningType = window.querySelector('.liningType').value;
         const beltQty = parseFloat(window.querySelector('.beltQty').value) || 0;
         const rodType = window.querySelector('.rodType').value;
-        const totalrodlengthft = (('.totalrodlength').value)/12;
+        const totalrodlength = parseFloat(window.querySelector('.totalrodlength').value) || 0;
+        const totalrodlengthft = totalrodlength / 12;
+
         const panelWidth = 20;
         const panels = Math.ceil(breadth / panelWidth);
 
@@ -286,14 +288,12 @@
       doc.setFontSize(12);
       doc.text('Order Details:', 20, 75);
 
-      // split text for multi-line output
       const splitText = doc.splitTextToSize(outputText, 170);
       doc.text(splitText, 20, 85);
 
       doc.save(`AVS_Curtain_Order_${customerName.replace(/\s+/g, '_')}_${orderDate}.pdf`);
     }
 
-    // UPDATED generateTailorSlip function to download instead of open new window
     function generateTailorSlip() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
@@ -326,7 +326,7 @@
         const beltQty = window.querySelector('.beltQty').value;
         const rodType = window.querySelector('.rodType').value;
 
-        if (yPos > 270) { // Add page break if too long
+        if (yPos > 270) {
           doc.addPage();
           yPos = 20;
         }
@@ -350,7 +350,6 @@
         yPos += 10;
       });
 
-      // Save the PDF directly (download)
       doc.save(`AVS_Tailor_Slip_${customerName.replace(/\s+/g, '_')}_${orderDate}.pdf`);
     }
   </script>
