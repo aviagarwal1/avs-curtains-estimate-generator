@@ -184,7 +184,7 @@
           <option value="al silent channel">AL Silent Channel</option>
         </select>
 
-       <label>Rod/Channel total length:</label>   
+        <label>Rod/Channel total length:</label>   
           <input type="number" class="totalrodlength" required>
       `;
       container.appendChild(div);
@@ -212,7 +212,7 @@
         const liningType = window.querySelector('.liningType').value;
         const beltQty = parseFloat(window.querySelector('.beltQty').value) || 0;
         const rodType = window.querySelector('.rodType').value;
-        const totalrodlengthft = totalrodlength/12;
+        const totalrodlengthft = (('.totalrodlength').value)/12;
         const panelWidth = 20;
         const panels = Math.ceil(breadth / panelWidth);
 
